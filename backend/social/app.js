@@ -1,23 +1,25 @@
 const express = require('express');
-// const { initConsumer } = require('./utilities/consumer');
 const { initProducer } = require('./utilities/producer');
-// const { connectConsumer } = require('./utilities/consumer');
-// const { connectProducer, connectAdmin } = require('./utilities/producer');
-// const KeyMaster = require('./utilities/KeyMaster');
-// const databaseConfig = require('./database/DatabaseConfig');
-
+const { db } = require("./database/models");
+const Routes = require("./src/routes");
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// app.use(databaseConfig.initializeDB());
+app.use('/api', Routes);
 
 app.use('/', async (req, res) => {
 
 	res.status(200).json({ message: `App is running on port. ${process.env.PORT || 4000}` });
 
 });
+
+//connect to database
+db.sequelize
+  .sync({ force: false })
+  .then(() => console.log("Database connected successfully"))
+  .catch((err) => console.log(`Database connection error: ${err.message}`));
 
 app.listen(process.env.PORT || 4000, async () => {
 	
